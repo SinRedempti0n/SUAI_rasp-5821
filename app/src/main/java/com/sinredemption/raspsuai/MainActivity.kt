@@ -1,16 +1,13 @@
 package com.sinredemption.raspsuai
 
 
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.core.view.GestureDetectorCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,8 +29,8 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     lateinit var gestureListener: View.OnTouchListener
 
     //Database vars
-    val database = Firebase.database
-    val myRef = database.getReference("rasp")
+    private val database = Firebase.database
+    private val myRef = database.getReference("rasp")
 
     //Lessons vars
     var lessons = ArrayList<LessonsClass>()
@@ -90,13 +87,13 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
         myRef.get().addOnSuccessListener {
             for (data in it.children) {
                 //Log.i("firebase", "Got value ${data.getValue().toString()}")
-                var num = data.child("num").getValue().toString().toInt()
-                var name = data.child("name").getValue().toString()
-                var teacher = data.child("teacher").getValue().toString()
-                var auditory = data.child("auditory").getValue().toString()
-                var day = data.child("day").getValue().toString().toInt()
-                var week = data.child("week").getValue().toString().toBoolean()
-                var type = data.child("type").getValue().toString().toInt()
+                val num = data.child("num").getValue().toString().toInt()
+                val name = data.child("name").getValue().toString()
+                val teacher = data.child("teacher").getValue().toString()
+                val auditory = data.child("auditory").getValue().toString()
+                val day = data.child("day").getValue().toString().toInt()
+                val week = data.child("week").getValue().toString().toBoolean()
+                val type = data.child("type").getValue().toString().toInt()
                 lessons.add(LessonsClass(num, name, teacher, auditory, day, week, type))
             }
             setAdapter(filterList())
@@ -107,13 +104,13 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
 
     //Filter by day and week
     fun filterList(): ArrayList<LessonsClass> {
-        var filtred = mutableListOf<LessonsClass>()
+        val filtered = mutableListOf<LessonsClass>()
         for (lesson in lessons) {
             if (lesson.day == day && lesson.week == week)
-                filtred.add(lesson)
+                filtered.add(lesson)
         }
-        binding.nothingText.visibility = if(filtred.isEmpty()) View.VISIBLE else View.INVISIBLE
-        return ArrayList(filtred)
+        binding.nothingText.visibility = if(filtered.isEmpty()) View.VISIBLE else View.INVISIBLE
+        return ArrayList(filtered)
     }
 
     //Show and sort lessons
@@ -123,13 +120,11 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
     }
 
     //Changing color of appbar and status bar
-    fun colorChange() {
-        if (Build.VERSION.SDK_INT >= 21) {
-            val window = this.window
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            window.statusBarColor = this.resources.getColor(if (week) R.color.red else R.color.blue)
-        }
+    private fun colorChange() {
+        val window = this.window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.statusBarColor = this.resources.getColor(if (week) R.color.red else R.color.blue)
         binding.appbar.setBackgroundColor(this.resources.getColor(if (week) R.color.red else R.color.blue))
     }
 
